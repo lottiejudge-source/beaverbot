@@ -1,12 +1,16 @@
 # Beaverbot
+
 Beaverbot is an automation tool for logging on-the-job hours in [SmartAssessor](https://www.smartassessor.co.uk/)
 
 > It's called beaverbot because it does the logging
 
 To automate logging your own hours, you can fork this repo to use the GitHub action, or clone it to run it locally.
 
+> Please note: the process will fail if an entry is duplicated, so you may have to go in and edit entries manually if it fails.
+
 ## Using GitHub Actions
-You'll have to add your SmartAssessor username and password as secrets for the workflow to run successfully:
+
+If you want to run the program as a GitHub Actiosn workflow, you'll need to add repository secrets.
 
 In your own fork of the repo, go to `Settings` > `Secrets & Variables` > `Actions`
 
@@ -17,7 +21,10 @@ USERNAME (your SmartAssessor username)
 PASSWORD (your SmartAssessor password)
 ```
 
+Commit your changes and manually trigger the GitHub Action to log your on the job hours.
+
 ## Running locally
+
 If you want to run the program locally, you'll need to add a `.env` to the root of the directory, containing:
 
 ```
@@ -25,13 +32,6 @@ USERNAME (your SmartAssessor username)
 PASSWORD (your SmartAssessor password)
 ```
 
-## Logging your hours
-Update `data.json` with your on the job day/hour entries for the week, and either:
+Update `data.json` with your on the job day/hour entries for the week.
 
-- Commit your changes and manually trigger the GitHub Action to log your on the job hours.
-
-OR
-
-- Run `npx playwright test` to log your on the job hours.
-
-> Please note: the process will fail if an entry is duplicated, so you may have to go in and edit entries manually
+Run `npx playwright test` to log your on the job hours.
