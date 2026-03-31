@@ -10,7 +10,7 @@ To automate logging your own hours, you can fork this repo to use the GitHub act
 
 ## Using GitHub Actions
 
-If you want to run the program as a GitHub Actiosn workflow, you'll need to add repository secrets.
+If you want to run the program as a GitHub Actions workflow, you'll need to add repository secrets.
 
 In your own fork of the repo, go to `Settings` > `Secrets & Variables` > `Actions`
 
