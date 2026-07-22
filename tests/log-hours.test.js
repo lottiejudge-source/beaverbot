@@ -5,25 +5,21 @@ const USERNAME = process.env.USERNAME;
 const PASSWORD = process.env.PASSWORD;
 
 test("Log 'On The Job' Hours", async ({ page }) => {
-  test.setTimeout(120000); // Increased timeout to accommodate multiple frame submissions
+  test.setTimeout(120000);
 
   await page.goto("https://smartassessor.co.uk/Account");
   await page.getByRole("textbox", { name: "Username" }).fill(USERNAME);
   await page.getByRole("textbox", { name: "Password" }).fill(PASSWORD);
+  
+  // Click Log In
+  await page.getByRole("button", { name: "Log In" }).click();
 
-  // Fix 1: Wait for post-login navigation to finish cleanly
-  await Promise.all([
-    page.waitForNavigation({ waitUntil: "domcontentloaded" }),
-    page.getByRole("button", { name: "Log In" }).click(),
-  ]);
+  // Define locator for the target course (handles links, text, or buttons flexibly)
+  const devopsCourse = page.locator('text=/DEVOPS ENGINEER/i');
 
-  // Fix 2: Fallback element match in case the course isn't strictly role="link"
-  const devopsCourse = page
-    .getByRole("link", { name: /DEVOPS ENGINEER/i })
-    .or(page.getByText(/DEVOPS ENGINEER/i));
-
-  await devopsCourse.waitFor({ state: "visible", timeout: 15000 });
-  await devopsCourse.click();
+  // Explicitly wait up to 30s for the dashboard/course to appear
+  await devopsCourse.first().waitFor({ state: "visible", timeout: 30000 });
+  await devopsCourse.first().click();
 
   await page.getByRole("link", { name: "Time Log" }).click();
 
