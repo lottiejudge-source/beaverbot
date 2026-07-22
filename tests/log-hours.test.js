@@ -5,13 +5,14 @@ const USERNAME = process.env.USERNAME;
 const PASSWORD = process.env.PASSWORD;
 
 test("Log 'On The Job' Hours", async ({ page }) => {
+  test.setTimeout(60000);
   const today = new Date().getDate().toString();
 
   await page.goto("https://smartassessor.co.uk/Account");
   await page.getByRole("textbox", { name: "Username" }).fill(USERNAME);
   await page.getByRole("textbox", { name: "Password" }).fill(PASSWORD);
   await page.getByRole("button", { name: "Log In" }).click();
-
+  await page.waitForLoadState("networkidle");
   await page.getByRole("link", { name: /DEVOPS ENGINEER/ }).click();
   await page.getByRole("link", { name: "Time Log" }).click();
 
