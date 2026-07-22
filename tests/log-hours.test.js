@@ -10,15 +10,26 @@ test("Log 'On The Job' Hours", async ({ page }) => {
   await page.goto("https://smartassessor.co.uk/Account");
   await page.getByRole("textbox", { name: "Username" }).fill(USERNAME);
   await page.getByRole("textbox", { name: "Password" }).fill(PASSWORD);
-  
+
   // Click Log In
   await page.getByRole("button", { name: "Log In" }).click();
 
-  // Define locator for the target course (handles links, text, or buttons flexibly)
-  const devopsCourse = page.locator('text=/DEVOPS ENGINEER/i');
+  // Dismiss the 2FA modal if it pops up
+  const setupLaterBtn = page
+    .getByRole("button", { name: /Set up later/i })
+    .or(page.getByText(/Set up later/i));
 
-  // Explicitly wait up to 30s for the dashboard/course to appear
-  await devopsCourse.first().waitFor({ state: "visible", timeout: 30000 });
+  try {
+    await setupLaterBtn.waitFor({ state: "visible", timeout: 5000 });
+    await setupLaterBtn.click();
+    console.log("⚠️ Dismissed 2FA setup popup.");
+  } catch (error) {
+    console.log("No 2FA popup detected, proceeding...");
+  }
+
+  // Navigate to DEVOPS ENGINEER course
+  const devopsCourse = page.locator("text=/DEVOPS ENGINEER/i");
+  await devopsCourse.first().waitFor({ state: "visible", timeout: 15000 });
   await devopsCourse.first().click();
 
   await page.getByRole("link", { name: "Time Log" }).click();
