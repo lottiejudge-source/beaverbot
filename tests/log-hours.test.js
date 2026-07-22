@@ -5,15 +5,26 @@ const USERNAME = process.env.USERNAME;
 const PASSWORD = process.env.PASSWORD;
 
 test("Log 'On The Job' Hours", async ({ page }) => {
-  test.setTimeout(60000);
-  const today = new Date().getDate().toString();
+  test.setTimeout(120000); // Increased timeout to accommodate multiple frame submissions
 
   await page.goto("https://smartassessor.co.uk/Account");
   await page.getByRole("textbox", { name: "Username" }).fill(USERNAME);
   await page.getByRole("textbox", { name: "Password" }).fill(PASSWORD);
-  await page.getByRole("button", { name: "Log In" }).click();
-  await page.waitForLoadState("networkidle");
-  await page.getByRole("link", { name: /DEVOPS ENGINEER/ }).click();
+
+  // Fix 1: Wait for post-login navigation to finish cleanly
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: "domcontentloaded" }),
+    page.getByRole("button", { name: "Log In" }).click(),
+  ]);
+
+  // Fix 2: Fallback element match in case the course isn't strictly role="link"
+  const devopsCourse = page
+    .getByRole("link", { name: /DEVOPS ENGINEER/i })
+    .or(page.getByText(/DEVOPS ENGINEER/i));
+
+  await devopsCourse.waitFor({ state: "visible", timeout: 15000 });
+  await devopsCourse.click();
+
   await page.getByRole("link", { name: "Time Log" }).click();
 
   for (const entry of logEntries) {
@@ -74,7 +85,7 @@ test("Log 'On The Job' Hours", async ({ page }) => {
       await expect(expectedRow).toBeVisible({ timeout: 5000 });
       console.log(`✅ ${entry.date} has been added`);
     } catch (error) {
-      console.error(`Couldn'tt find ${entry.date}`);
+      console.error(`Couldn't find ${entry.date}`);
       throw error;
     }
   }
